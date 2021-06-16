@@ -29,12 +29,13 @@ while (true) {
 			print_r($chat_id);
 			print_r($username);
 
-			if ($text == '/start'){ // Если пользователь подключился в первый раз, ему поступит приветствие
-			    $telegramApi->sendMessage($chat_id, 'Привет'. ' ' . $first_name . '!'); //Приветствует Пользователя
+			if (strpos($text, 'Привет')){ // Если пользователь подключился в первый раз, ему поступит приветствие
+
+			    $telegramApi->sendMessage($chat_id, 'Привет'. ', ' . $first_name . '!'); //Приветствует Пользователя
 			} else {
 			    $telegramApi->sendMessage($chat_id, $table); // Спрашивает как дела
                 //echo $text;
-			}
-		}
+            }
+        }
 	}
 }

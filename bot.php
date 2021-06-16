@@ -3,12 +3,13 @@
 use GuzzleHttp\Client;
 use Telegram\Api;
 
-include('../bot/conf.php');
+//include('../bot/conf.php');
 
 
 class TelegramBot
 {
-    protected $token = "XXXXXXXXX";
+    //protected $token = "[x]";//tonality
+    protected $token = "x";//royal
     protected $updateId;
 	// Функция собирает URL
 	public function query($method, $params = [])
@@ -80,6 +81,7 @@ class TelegramBot
         //$result .= $chords[$root_transpose_index] . $root_extra_info;
 
         if (count($root_arr) > 1) {
+            $result = "";
             // get the non root tone
             $non_root = $root_arr[1];
             // the chord is the first character and a # if there is one
@@ -102,24 +104,42 @@ class TelegramBot
         return $result;
     }
 
+    //формирует расписание
     public function schedule($text) {
-
+        //помещает слова из сообщения в элементы массива
 	    $names = explode(' ', $text, 50);
-        shuffle($names);
-        //$numOfNames = count($names);
-        //array_fill($numOfNames, 4, $names);
-        $table = "Июн| __1____8____15____22____29__|
+        $mixedText = '';
+        $countNames = count($names);
+
+        //заполняет массив именами, если их меньше, чем надо (<20)
+        if ($countNames<20) {
+            $least = floor(20 / $countNames);;
+            for ($i = 0; $i <= $least; $i++) {
+                shuffle($names);
+
+                $mixedText .= implode(" ", $names)." ";
+            }
+            $names = explode(' ', $mixedText, 30);
+        }
+
+        //определяет 5 дат следующих вторников для расписания
+        $date = time();
+        $day = 60 * 60 * 24;
+        while (date('D', $date) !== 'Tue') $date += $day;
+        for($i=0; $i<=28; $i+=7)
+        {
+            $tue[] = date('d', $date + ($i * $day));
+        }
+
+        //пишет текущий месяц из трех букв
+        $month = date("M");
+
+        //Таблица для вывода
+$table = "$month | __$tue[0]___$tue[1]___$tue[2]___$tue[3]___$tue[4]__|
 лдк | $names[0] $names[4] $names[8] $names[12] $names[16]
 прс | $names[1] $names[5] $names[9] $names[13] $names[17]
 слв | $names[2] $names[6] $names[10] $names[14] $names[18]
 двц | $names[3] $names[7] $names[11] $names[15] $names[19]";
-
-	    for ($numOfNames = count($names); $numOfNames < 20; $numOfNames++) {
-            //shuffle($names);
-
-            $names[] = array_fill($numOfNames, 1, $names[0]);
-	    }
-	    print_r($names);
 
         return ($table);
     }
